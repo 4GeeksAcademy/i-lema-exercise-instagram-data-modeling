@@ -7,6 +7,14 @@ from eralchemy2 import render_er
 
 Base = declarative_base()
 
+class Follower(Base):
+    __tablename__ = 'follower'
+    # Here we define columns for the table person
+    # Notice that each column is also a normal Python instance attribute.
+    user_from_id = Column(Integer, ForeignKey('user.ID'), primary_key=True)
+    user_to_id = Column(Integer, ForeignKey('user.ID'), primary_key=True)
+    user = relationship('User', backref='follower', lazy=True)
+
 class User(Base):
     __tablename__ = 'user'
     # Here we define columns for the table address.
@@ -15,19 +23,16 @@ class User(Base):
     username = Column(String(250), nullable=False)
     firstname = Column(String(250), nullable=False)
     lastname = Column(String(250), unique=True, nullable=False)
-    email = Column(String(250), nullable=False)
-    follower = relationship('Follower', backref='user', lazy=True)
+    email = Column(String(250), nullable=False, unique=True)
     comment = relationship('Comment', backref='user', lazy=True)
     post = relationship('Post', backref='user', lazy=True)
-
-class Follower(Base):
-    __tablename__ = 'follower'
-    # Here we define columns for the table person
-    # Notice that each column is also a normal Python instance attribute.
-    user_from_id = Column(Integer, ForeignKey('user.ID'), primary_key=True)
-    user_to_id = Column(Integer, ForeignKey('user.ID'), primary_key=True)
-    user = relationship(User)
-    user = relationship('User', backref='follower', lazy=True)
+    followed = relationship(
+        'User',
+        secondary=Follower,
+        primaryjoin=(Follower.user_from_id == id),
+        secondaryjoin=(Follower.user_to_id == id),
+        backref='following',
+        lazy='dynamic')
 
 class Comment(Base):
     __tablename__ = 'comment'
