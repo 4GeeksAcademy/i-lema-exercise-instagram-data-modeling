@@ -12,8 +12,7 @@ class Follower(Base):
     # Here we define columns for the table person
     # Notice that each column is also a normal Python instance attribute.
     user_from_id = Column(Integer, ForeignKey('user.ID'), primary_key=True)
-    user_to_id = Column(Integer, ForeignKey('user.ID'), primary_key=True)
-    user = relationship('User', backref='follower', lazy=True)
+    user_to_id = Column(Integer, ForeignKey('user.ID'), primary_key=True)    
 
 class User(Base):
     __tablename__ = 'user'
@@ -42,7 +41,6 @@ class Comment(Base):
     comment_text = Column(String(250), nullable=False)
     author_id = Column(Integer, ForeignKey('user.ID'))
     post_id = Column(Integer, ForeignKey('user.ID'))
-    user = relationship(User)
 
 class Post(Base):
     __tablename__ = 'post'
@@ -62,7 +60,6 @@ class Media(Base):
     type = Column(Enum("Vídeo","Foto","Reel"))
     url = Column(String(250), nullable=False)
     post_id = Column(Integer, ForeignKey('post.ID'))
-    post = relationship(Post)
 
     def to_dict(self):
         return {}
